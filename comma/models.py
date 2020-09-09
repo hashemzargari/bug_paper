@@ -8,6 +8,32 @@ POST_STATUS = [('PU', 'publish'), ('DR', 'draft')]
 ANONYMOUS_USER_ID = 1
 
 
+class Category(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    slug = models.SlugField(blank=True, unique=True)
+    active = models.BooleanField(default=True)
+    parent = models.ForeignKey('self',
+                               related_name='children',
+                               on_delete=models.SET_DEFAULT,
+                               default=None,
+                               blank=True,
+                               null=True)
+    cat_url = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        if not self.cat_url:
+            # self.cat_url =
+            pass
+
+        super().save(*args, **kwargs)
+
+
 class Post(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(blank=True, unique=True)
