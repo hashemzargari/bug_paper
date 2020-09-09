@@ -10,7 +10,7 @@ ANONYMOUS_USER_ID = 1
 
 class Post(models.Model):
     title = models.CharField(max_length=255)
-    slug = models.SlugField()
+    slug = models.SlugField(blank=True, unique=True)
     description = models.TextField(blank=True, null=True)
     body = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -26,16 +26,16 @@ class Post(models.Model):
                               blank=True,
                               null=True)
 
+    class Meta:
+        ordering = ['-publish_datetime', '-updated_at']
+
     def __str__(self):
         return f'{self.id}: {self.title}'
 
     def save(self, *args, **kwargs):
-
         # check for slug
         if not self.slug:
-            self.slug = slugify(self.title) + '_' + generate_random_string()
-        else:
-            self.slug = slugify(self.slug) + '_' + generate_random_string()
+            self.slug = slugify(self.title) + '-' + generate_random_string()
 
         # call default save method
         super().save(*args, **kwargs)
