@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from taggit_serializer.serializers import (TagListSerializerField,
+                                           TaggitSerializer)
 
 from django.contrib.auth import get_user_model
 from django.utils import timesince, timezone
@@ -27,11 +29,12 @@ class UserInfoSerializer(serializers.ModelSerializer):
         fields = ['username']
 
 
-class PostListSerializer(serializers.ModelSerializer):
-    category = CategoryForPostSerializer()
-    created_by = UserInfoSerializer()
+class PostListSerializer(TaggitSerializer, serializers.ModelSerializer):
     updated_at = serializers.SerializerMethodField()
     publish_at = serializers.SerializerMethodField()
+    category = CategoryForPostSerializer()
+    created_by = UserInfoSerializer()
+    tags = TagListSerializerField()
 
     def get_updated_at(self, instance):
         return {

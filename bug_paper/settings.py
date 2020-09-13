@@ -37,9 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # 3rd party app
+
+    # rest_framework
+    'rest_framework',
+
     # tags
     'taggit',
-    'rest_framework',
+    'taggit_serializer',
 
     # Local
     # comma => blog app
