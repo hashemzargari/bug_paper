@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
+from taggit.managers import TaggableManager
+
 from comma.helpers import generate_random_string
 from django.utils.text import slugify
 
@@ -79,6 +81,8 @@ class Post(models.Model):
                                  default=None,
                                  blank=True,
                                  null=True)
+    # TODO: clickable and serializers(rest) for tags
+    tags = TaggableManager()
 
     class Meta:
         ordering = ['-publish_datetime', '-updated_at']

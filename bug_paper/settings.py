@@ -37,9 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # 3rd party app
-    # category
-    # 'categories',
-    # 'categories.editor',
+    # tags
+    'taggit',
 
     # Local
     # comma => blog app
@@ -121,3 +120,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# TAGGIT
+TAGGIT_CASE_INSENSITIVE = True
