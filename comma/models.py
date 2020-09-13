@@ -24,6 +24,28 @@ class Category(models.Model):
     def __str__(self):
         return self.title
 
+    def get_parents(self):
+        parent = self.parent
+        if parent is None:
+            return None
+        return {
+            self.title: {
+                'url': f'url_for_{self.slug}',
+                'parent': parent.get_parents()
+            }
+        }
+
+    def get_all_children(self):
+        children = self.children.all()
+        if children is None:
+            return None
+        return {
+            self.title: {
+                'url': f'url_for_{self.slug}',
+                'children': [ch.get_all_children() for ch in children]
+            }
+        }
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
@@ -51,6 +73,12 @@ class Post(models.Model):
     image = models.ImageField(upload_to='posts/images',
                               blank=True,
                               null=True)
+
+    category = models.ForeignKey(Category,
+                                 on_delete=models.SET_DEFAULT,
+                                 default=None,
+                                 blank=True,
+                                 null=True)
 
     class Meta:
         ordering = ['-publish_datetime', '-updated_at']
