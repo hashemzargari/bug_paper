@@ -85,6 +85,8 @@ class Post(models.Model):
     # TODO: clickable and serializers(rest) for tags
     tags = TaggableManager(blank=True)
 
+    # TODO: count of likes, reads, ...
+
     class Meta:
         ordering = ['-publish_datetime', '-updated_at']
 

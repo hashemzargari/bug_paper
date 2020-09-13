@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     # 3rd party app
     # tags
     'taggit',
+    'rest_framework',
 
     # Local
     # comma => blog app
