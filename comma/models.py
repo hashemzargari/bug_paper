@@ -5,6 +5,7 @@ from taggit.managers import TaggableManager
 
 from comma.helpers import generate_random_string
 from django.utils.text import slugify
+from django.utils import timezone
 
 POST_STATUS = [('PU', 'publish'), ('DR', 'draft')]
 ANONYMOUS_USER_ID = 1
@@ -65,8 +66,8 @@ class Post(models.Model):
     body = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    publish_datetime = models.DateTimeField()
-    status = models.CharField(choices=POST_STATUS, max_length=2)
+    publish_datetime = models.DateTimeField(blank=True)
+    status = models.CharField(choices=POST_STATUS, max_length=2, default='PU')
     active = models.BooleanField(default=True)
     created_by = models.ForeignKey(get_user_model(),
                                    related_name='posts',
@@ -82,7 +83,7 @@ class Post(models.Model):
                                  blank=True,
                                  null=True)
     # TODO: clickable and serializers(rest) for tags
-    tags = TaggableManager()
+    tags = TaggableManager(blank=True)
 
     class Meta:
         ordering = ['-publish_datetime', '-updated_at']
@@ -94,6 +95,20 @@ class Post(models.Model):
         # check for slug
         if not self.slug:
             self.slug = slugify(self.title) + '-' + generate_random_string()
+
+        # check for schedule
+        if self.status == 'DR':
+            if self.publish_datetime:
+                if self.publish_datetime <= timezone.now():
+                    raise ValueError('past date for publish-date is not ok!')
+                # TODO: add Task
+                # print(f'{self.title} = > in time : {self.publish_datetime}')
+                pass
+            else:
+                self.publish_datetime = timezone.now()
+        elif self.status == 'PU':
+            if not self.publish_datetime:
+                self.publish_datetime = timezone.now()
 
         # call default save method
         super().save(*args, **kwargs)
